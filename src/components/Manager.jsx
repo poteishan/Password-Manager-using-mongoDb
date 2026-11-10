@@ -99,8 +99,8 @@ const Manager = () => {
                 draggable
                 pauseOnHover
                 theme="dark"
-                transition={Bounce}
-            />
+                transition={Bounce}/>
+
             <div className="mx-auto max-w-5xl px-4 pb-12">
                 {/* Heading */}
                 <div className="pt-14 text-center">
@@ -196,6 +196,11 @@ const Manager = () => {
                                         </td>
                                         <td className="px-4 py-2">
                                             {"•".repeat(item.password.length)}
+                                             <i
+                                                onClick={() => copyText(item.password)}
+                                                className="fa-regular fa-copy ml-2 cursor-pointer"
+                                                title="Copy"
+                                            />
                                         </td>
                                         <td className="px-4 py-2">
                                             <i className="fa-solid fa-pencil cursor-pointer mx-4"
