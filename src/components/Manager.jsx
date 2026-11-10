@@ -38,11 +38,9 @@ const Manager = () => {
         let req = await fetch("http://localhost:3000/")
         let passwords = await req.json()
         setpasswordArray(passwords)
-        console.log(passwords);
     }
 
     const savePass = async () => {
-        console.log(passwordArray)
         if ((form.site && form.username && form.password) === "") {
             alert("Nothing saved")
         }
@@ -61,7 +59,6 @@ const Manager = () => {
             setform({ site: "", username: "", password: "" })
             let result = await res.json();
             toast.success("Password saved successfully")
-            console.log(result);
         }
     }
 
