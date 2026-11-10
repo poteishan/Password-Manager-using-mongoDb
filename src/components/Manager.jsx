@@ -3,8 +3,6 @@ import { ToastContainer, toast, Bounce } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from 'uuid';
 
-const STORAGE_KEY = "passwords";
-
 const Manager = () => {
     // Load saved passwords on first render
     const [showPassword, setshowPassword] = useState(false)
@@ -14,29 +12,56 @@ const Manager = () => {
     const inputBase =
         "w-full rounded-full border border-green-500 bg-white px-4 py-1.5 text-sm text-black placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-300";
 
-    const deletePassword = (id) => {
+    const deletePassword = async (id) => {
         let c = confirm("Are you sure to delete this password?")
         if (c) {
             setpasswordArray(passwordArray.filter(item => item.id !== id))
-            localStorage.setItem("passwords", JSON.stringify(passwordArray.filter(item => item.id !== id)))
+            // localStorage.setItem("passwords", JSON.stringify(passwordArray.filter(item => item.id !== id)))
+            let res = await fetch("http://localhost:3000/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) })
+            setform({ site: "", username: "", password: "" })
+            toast.success("Password deleted successfully")
         }
     }
 
-    const editPassword = (id) => {
-        setform(passwordArray.filter(item => item.id === id)[0])
+    const editPassword = async (id) => {
+        setform(passwordArray.find(item => item.id === id))
         setpasswordArray(passwordArray.filter(item => item.id !== id))
+        await fetch("http://localhost:3000/", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id })
+        })
     }
 
+    //Backend connect
+    const getpasswords = async () => {
+        let req = await fetch("http://localhost:3000/")
+        let passwords = await req.json()
+        setpasswordArray(passwords)
+        console.log(passwords);
+    }
 
-    const savePass = () => {
+    const savePass = async () => {
         console.log(passwordArray)
         if ((form.site && form.username && form.password) === "") {
             alert("Nothing saved")
         }
+        else if (form.site.length < 3) return toast.error("Website URL is too short")
+        else if (form.username.length < 3) return toast.error("Username is too short")
+        else if (form.password.length < 3) return toast.error("Password is too short")
+    
         else {
-            setpasswordArray([...passwordArray, { ...form, id: uuidv4() }])
-            localStorage.setItem("passwords", JSON.stringify([...passwordArray, { ...form, id: uuidv4() }]))
+            const newPassword = {
+                ...form,
+                id: uuidv4()
+            };
+            setpasswordArray([...passwordArray, newPassword])
+            // localStorage.setItem("passwords", JSON.stringify([...passwordArray, { ...form, id: uuidv4() }]))
+            let res = await fetch("http://localhost:3000/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newPassword) })
             setform({ site: "", username: "", password: "" })
+            let result = await res.json();
+            toast.success("Password saved successfully")
+            console.log(result);
         }
     }
 
@@ -61,13 +86,8 @@ const Manager = () => {
 
     // saving personal pass into the localstorage
     useEffect(() => {
-        let passwords = localStorage.getItem("passwords")
-        if (passwords) {
-            setpasswordArray(JSON.parse(passwords))
-        }
+        getpasswords()
     }, [])
-
-
 
     return (
         <>
@@ -136,7 +156,7 @@ const Manager = () => {
                     </div>
 
                     <button
-                        className="flex items-center gap-2 rounded-full border border-green-900 bg-green-400 px-8 py-2 text-sm font-medium hover:bg-green-300"
+                        className="flex items-center gap-2 rounded-full cursor-pointer border border-green-900 bg-green-400 px-8 py-2 text-sm font-medium hover:bg-green-300"
                         onClick={savePass}>
                         <i className="fa-solid fa-table-cells-large text-lg" />
                         Save Password
