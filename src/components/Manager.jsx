@@ -7,6 +7,7 @@ const STORAGE_KEY = "passwords";
 
 const Manager = () => {
     // Load saved passwords on first render
+    const [showPassword, setshowPassword] = useState(false)
     const [form, setform] = useState({ site: "", username: "", password: "" })
     const [passwordArray, setpasswordArray] = useState([])
 
@@ -118,6 +119,7 @@ const Manager = () => {
                         <div className="relative md:w-56">
                             <input
                                 name="password"
+                                type={showPassword ? "text" : "password"}
                                 value={form.password}
                                 placeholder="Enter Password"
                                 className="w-full rounded-full border border-black bg-white py-1.5 pl-4 pr-10 text-sm text-black placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-300"
@@ -125,9 +127,10 @@ const Manager = () => {
                             />
                             <button
                                 type="button"
+                                onClick={() => setshowPassword(!showPassword)}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
                             >
-                                <i className="fa-solid fa-eye"></i>
+                                <i className={`fa-solid ${showPassword ? "fa-eye" : "fa-eye-slash"}`}></i>
                             </button>
                         </div>
                     </div>
@@ -176,14 +179,6 @@ const Manager = () => {
                                         </td>
                                         <td className="px-4 py-2">
                                             {"•".repeat(item.password.length)}
-                                            {/* <i
-                                                onClick={() => copyText(item.password)}
-                                                className="fa-regular fa-copy ml-2 cursor-pointer"
-                                                title="Copy"
-                                            />
-                                            <i onClick={() => copyText(item.password)} 
-                                            className="fa-solid fa-eye-slash ml-2 cursor-pointer">
-                                            </i> */}
                                         </td>
                                         <td className="px-4 py-2">
                                             <i className="fa-solid fa-pencil cursor-pointer mx-4"
